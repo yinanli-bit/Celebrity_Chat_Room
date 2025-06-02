@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<link href="style.css?v=2">
+<!-- Chat.html -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>智能对话 - 控制台</title>
+    <style>
+        :root {
+            --primary-blue: #2A5CAA;
+            --dark-gray: #1A1A1A;
+            --light-gray: #F0F4F8;
+            --accent-green: #45a049;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--light-gray);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .console-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .console-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .console-header h2 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        #chat-window {
+            height: 60vh;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: #fafafa;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            display: flex;
+            margin: 1rem 0;
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .bot-message .message-bubble {
+            background: #fff;
+            color: var(--dark-gray);
+            border: 1px solid #eee;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            min-height: 50px;
+            max-height: 150px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        #message-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        button {
+            padding: 0.8rem 2rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1E477A;
+        }
+
+        @media (max-width: 768px) {
+            .console-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            #chat-window {
+                height: 65vh;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="console-container">
+    <div class="console-header">
+        <h2>名人聊天室</h2>
+    </div>
+
+    <div id="chat-window"></div>
+
+    <div class="input-group">
+            <textarea
+                    id="message-input"
+                    placeholder="输入消息（Enter发送，Ctrl+Enter换行）..."
+                    rows="1"
+            ></textarea>
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
+
+<script>
+    // 输入框自适应高度
+    const textarea = document.getElementById('message-input');
+    textarea.addEventListener('input', () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    });
+
+    // 键盘事件处理
+    textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.ctrlKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // 保留原有发送逻辑
+    function sendMessage() {
+        const message = textarea.value.trim();
+        if (!message) return;
+
+        // 添加用户消息
+        const userDiv = document.createElement('div');
+        userDiv.className = 'message-item user-message';
+        userDiv.innerHTML = `
+                <div class="message-bubble">${message}</div>
+            `;
+        document.getElementById('chat-window').appendChild(userDiv);
+
+        // 清空输入框
+        textarea.value = '';
+        textarea.style.height = 'auto';
+
+        fetch('http://localhost:8080/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+            body: JSON.stringify({ message: message })
+        })
+            .then(response => response.json())
+            .then(data => {
+                const reply = data.reply;
+
+                // 添加AI回复
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message-item bot-message';
+                botDiv.innerHTML = `
+                    <div class="message-bubble">${reply.replace(/\n/g, '<br>')}</div>
+                `;
+                document.getElementById('chat-window').appendChild(botDiv);
+
+                // 滚动到底部
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            })
+            .catch(error => {
+                console.error('请求失败:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message-item bot-message';
+                errorDiv.innerHTML = `
+                    <div class="message-bubble">服务连接异常，请稍后重试</div>
+                `;
+                document.getElementById('chat-window').appendChild(errorDiv);
+            });
+    }
+</script>
+</body>
+</html>
