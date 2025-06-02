@@ -1,0 +1,3 @@
+D:/TC_AI/TCproject_0_2/cmake-build-debug/CMakeFiles/TCproject_0_2.dir
+D:/TC_AI/TCproject_0_2/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/TC_AI/TCproject_0_2/cmake-build-debug/CMakeFiles/rebuild_cache.dir

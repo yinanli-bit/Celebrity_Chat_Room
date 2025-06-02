@@ -1,0 +1,8 @@
+# ninja log v6
+2	282	7705688370677508	build.ninja	975dd4875979e056
+28	128	7691593442839335	CMakeFiles/TCproject_0_2.dir/src/FileManager.cpp.obj	fe272ffdf2c4c7da
+41	1525	7691593442964723	CMakeFiles/TCproject_0_2.dir/src/ChatHandler.cpp.obj	777ea6b068ad401f
+20	735	7691593442754896	CMakeFiles/TCproject_0_2.dir/src/User.cpp.obj	8f307d9047de6766
+8956	23031	7691614365391403	TCproject_0_2.exe	ac2c005a6695ad5f
+7	8955	7691614275903044	CMakeFiles/TCproject_0_2.dir/main.cpp.obj	9010095732fb32b9
+2	20	7691593440086964	clean	f052df2061f0777d
